@@ -7,7 +7,9 @@ session_start();
 use App\View;
 use App\Redirect;
 use App\Controller\HomeController;
+use App\Controller\LoginController;
 use App\Controller\SignupController;
+use App\Controller\LogoutController;
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     // Home page
@@ -15,11 +17,19 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
     // Apartments
     $r->addRoute('GET', '/post', [HomeController::class, 'add']);
+    $r->addRoute('GET', '/show/{id:\d+}', [HomeController::class, 'show']);
     $r->addRoute('POST', '/post', [HomeController::class, 'post']);
 
-    // Login
+    // Sign up
     $r->addRoute('GET', '/signup', [SignupController::class, 'signUp']);
     $r->addRoute('POST', '/signup', [SignupController::class, 'signUpUser']);
+
+    // Login
+    $r->addRoute('GET', '/login', [LoginController::class, 'login']);
+    $r->addRoute('POST', '/login', [LoginController::class, 'loginUser']);
+
+    // Logout
+    $r->addRoute('GET', '/logout', [LogoutController::class, 'logout']);
 });
 
 // Fetch method and URI from somewhere
@@ -62,6 +72,12 @@ switch ($routeInfo[0]) {
             header("Location: ". $response->getPath());
             exit;
         }
-
         break;
+}
+
+if (isset($_SESSION['errors'])) {
+    unset($_SESSION['errors']);
+}
+if (isset($_SESSION['inputs'])) {
+    unset($_SESSION['inputs']);
 }
