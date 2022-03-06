@@ -6,9 +6,20 @@ session_start();
 
 use App\View;
 use App\Redirect;
+use App\Controller\HomeController;
+use App\Controller\SignupController;
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    // $r->addRoute('GET', '/users', ["class". 'function']);
+    // Home page
+    $r->addRoute('GET', '/', [HomeController::class, 'home']);
+
+    // Apartments
+    $r->addRoute('GET', '/post', [HomeController::class, 'add']);
+    $r->addRoute('POST', '/post', [HomeController::class, 'post']);
+
+    // Login
+    $r->addRoute('GET', '/signup', [SignupController::class, 'signUp']);
+    $r->addRoute('POST', '/signup', [SignupController::class, 'signUpUser']);
 });
 
 // Fetch method and URI from somewhere
@@ -39,6 +50,9 @@ switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::FOUND:
         $controller = $routeInfo[1][0];
         $method = $routeInfo[1][1];
+
+        $response = (new $controller)->$method($routeInfo[2]);
+
         $twig = new \Twig\Environment(new \Twig\Loader\FilesystemLoader('app/View'));
 
         if ($response instanceof View) {

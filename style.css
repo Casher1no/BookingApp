@@ -1,0 +1,19 @@
+.signup-form-div{
+    width:90%;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #e5e8ec;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.signup-form{
+    
+    width:50%;
+    margin: auto;
+    padding-top: 200px;
+}
+.errors{
+    width: 30%;
+    margin: auto;
+    padding-top: 30px;
+}
