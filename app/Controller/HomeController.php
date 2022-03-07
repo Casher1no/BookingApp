@@ -6,6 +6,7 @@ use App\Database;
 use App\Redirect;
 use Carbon\Carbon;
 use App\Model\Apartment;
+use App\Model\Reservation;
 use App\Validation\Errors;
 use App\Validation\ApartmentFormValidation;
 use App\Exceptions\ApartmentValidationException;
@@ -25,9 +26,11 @@ class HomeController
         foreach ($apartmentsQuery as $apartment) {
             $apartments[] = new Apartment(
                 (int)$apartment['id'],
+                (int)$apartment['user_id'],
                 $apartment['title'],
                 $apartment['description'],
                 $apartment['address'],
+                $apartment['created_at'],
                 $apartment['select_from'],
                 $apartment['select_to'],
             );
@@ -93,7 +96,35 @@ class HomeController
         ->setParameter(0, (int) $vars['id'])
         ->fetchAllAssociative();
 
+        $rated = Database::connection()
+            ->createQueryBuilder()
+            ->select('COUNT(id)')
+            ->from('apartment_rating')
+            ->where('user_id = ? AND apartment_id = ?')
+            ->setParameter(0, $_SESSION['userid'])
+            ->setParameter(1, (int)$vars['id'])
+            ->fetchNumeric();
+    
+        // If user rated article
+        $rated = $rated[0] > 0 ? true : false;
 
+        $ratingQuery = Database::connection()
+        ->createQueryBuilder()
+        ->select('apartment_rating')
+        ->from('apartment_rating')
+        ->where('apartment_id = ?')
+        ->setParameter(0, (int)$vars['id'])
+        ->fetchAllAssociative();
+
+        $averageRating=0;
+
+        foreach ($ratingQuery as $rating) {
+            $averageRating += $rating['apartment_rating'];
+        }
+        $averageRating = number_format($averageRating / count($ratingQuery), 1, '.', '');
+        if ($averageRating == "nan") {
+            $averageRating = "0 ratings";
+        }
 
         $dateTo = "Long Term";
         if ($apartmentsQuery[0]['select_to'] != null) {
@@ -104,17 +135,95 @@ class HomeController
 
         $apartment = new Apartment(
             (int)$apartmentsQuery[0]['id'],
+            (int)$apartmentsQuery[0]['user_id'],
             $apartmentsQuery[0]['title'],
             $apartmentsQuery[0]['description'],
             $apartmentsQuery[0]['address'],
+            $apartmentsQuery[0]['created_at'],
             $dateFrom,
             $dateTo
         );
 
+        $reservations=[];
+
+        $reservationQuery = Database::connection()
+            ->createQueryBuilder()
+            ->select('*')
+            ->from('apartment_reservations')
+            ->where('apartment_id = ?')
+            ->setParameter(0, (int) $vars['id'])
+            ->fetchAllAssociative();
+
+        foreach ($reservationQuery as $reservation) {
+            $reservations[] = new Reservation(
+                $reservation['apartment_id'],
+                $reservation['user_id'],
+                $reservation['reserve_in'],
+                $reservation['reserve_out']
+            );
+        }
+
+        $dateErrors = $_SESSION['dateErrors'];
+        if (isset($_SESSION['dateErrors'])) {
+            unset($_SESSION['dateErrors']);
+        }
+
         return new View("Home/show", [
             'apartment' => $apartment,
             'userName' => $_SESSION['name'],
-            'userId' => $_SESSION['userid']
+            'userId' => $_SESSION['userid'],
+            'rateStatus' => $rated,
+            'averageRating' =>$averageRating,
+            'reservations' => $reservations,
+            'errors' => $dateErrors
         ]);
+    }
+    public function delete(array $vars):Redirect
+    {
+        Database::connection()
+            ->delete('apartments', ['id'=>(int)$vars['id']
+            ]);
+        ;
+        return new Redirect('/');
+    }
+    public function edit(array $vars):View
+    {
+        $apartmentsQuery = Database::connection()
+            ->createQueryBuilder()
+            ->select('*')
+            ->from('apartments')
+            ->where("id = ?")
+            ->setParameter(0, (int) $vars['id'])
+            ->fetchAllAssociative();
+       
+
+        $apartment = new Apartment(
+            (int)$apartmentsQuery[0]['id'],
+            (int)$apartmentsQuery[0]['user_id'],
+            $apartmentsQuery[0]['title'],
+            $apartmentsQuery[0]['description'],
+            $apartmentsQuery[0]['address'],
+            $apartmentsQuery[0]['created_at'],
+            $apartmentsQuery[0]['select_from'],
+            $apartmentsQuery[0]['select_to'],
+        );
+
+        return new View("Home/edit", [
+            'apartment' => $apartment
+        ]);
+    }
+    public function update(array $vars):Redirect
+    {
+        Database::connection()->update("apartments", [
+            'title' => $_POST['title'],
+            'description' => $_POST['description'],
+            'address' => $_POST['address'],
+            'select_to' => $_POST['select_to'],
+            'select_from' => $_POST['select_from']
+        ], ['id' => (int)$vars['id']]);
+
+            
+
+        return new Redirect("/");
     }
 }

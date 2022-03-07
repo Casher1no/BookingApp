@@ -8,8 +8,9 @@ use App\View;
 use App\Redirect;
 use App\Controller\HomeController;
 use App\Controller\LoginController;
-use App\Controller\SignupController;
 use App\Controller\LogoutController;
+use App\Controller\SignupController;
+use App\Controller\ReservationController;
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     // Home page
@@ -18,7 +19,13 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     // Apartments
     $r->addRoute('GET', '/post', [HomeController::class, 'add']);
     $r->addRoute('GET', '/show/{id:\d+}', [HomeController::class, 'show']);
+    $r->addRoute('GET', '/delete/{id:\d+}', [HomeController::class, 'delete']);
+    $r->addRoute('POST', '/rate/{id:\d+}', [ReservationController::class, 'rate']);
+    $r->addRoute('POST', '/show/unlike/{id:\d+}', [ReservationController::class, 'unlike']);
     $r->addRoute('POST', '/post', [HomeController::class, 'post']);
+    $r->addRoute('GET', '/edit/{id:\d+}', [HomeController::class, 'edit']);
+    $r->addRoute('POST', '/edit/{id:\d+}', [HomeController::class, 'update']);
+    $r->addRoute('POST', '/reserve/{id:\d+}', [ReservationController::class, 'reserve']);
 
     // Sign up
     $r->addRoute('GET', '/signup', [SignupController::class, 'signUp']);

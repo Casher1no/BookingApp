@@ -48,3 +48,27 @@ body{
     border-radius: 5px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
+#rate-apartment-div{
+    overflow: auto;
+    float:right;
+    position: relative;
+    top:-45px;
+}
+.average-rating{
+    overflow: auto;
+    float:right;
+    position: relative;
+    top:-7px;
+    left: 150px;
+    color: orange;
+    font-weight: border;
+}
+#center-show{
+    width:800px;
+}
+#reservation-table{
+    width:800px;
+    margin: auto;
+    border: 2px solid #e5e8ec;
+    border-radius: 5px;
+}

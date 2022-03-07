@@ -54,7 +54,10 @@
                     <h5 class="card-title">{{ apartment.title }}</h5>
 
                     <a href="/show/{{ apartment.id }}" class="btn btn-primary">Watch</a>
-
+                    {% if userId == apartment.userId and userName != null %}
+                    <a href="/delete/{{ apartment.id }}" class="btn btn-primary" onclick="return confirm('Are you sure?')">Delete</a>
+                    <a href="/edit/{{ apartment.id }}" class="btn btn-primary">Edit</a>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
