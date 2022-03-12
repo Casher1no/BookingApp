@@ -6,7 +6,6 @@ use App\Database;
 use App\Redirect;
 use App\Model\Apartment;
 use App\Model\Reservation;
-use App\Validation\Errors;
 use App\Exceptions\ReservationFormException;
 use App\Validation\ReservationFormValidation;
 
@@ -22,7 +21,7 @@ class ReservationController
         ]);
         return new Redirect("/show/{$apartmentId}");
     }
-    public function reserve(array $vars):Redirect
+    public function reserve(array $vars):View
     {
         $userDateFrom = explode("/", $_POST['date_from']);
         $userDateTo = explode("/", $_POST['date_to']);
@@ -112,9 +111,11 @@ class ReservationController
             $apartmentsQuery[0]['description'],
             $apartmentsQuery[0]['address'],
             $apartmentsQuery[0]['created_at'],
+            $apartmentsQuery[0]['cost'],
             $dateFrom,
             $dateTo
         );
+        
 
         try {
             $validator = (new ReservationFormValidation($inputs));
@@ -125,18 +126,23 @@ class ReservationController
             return new Redirect("/show/{$apartmentId}");
         }
 
-       
-
-
+        $_SESSION['reserve'] // <------ Finished here------
+        // Transfer Cost, from - to dates and user ID to payment view
         
-
-
+        return new View("/Home/reserve", [
+            'apartment' => $apartment,
+            'userid' => $_SESSION['userid'],
+            
+        ]);
+    }
+    public function pay():Redirect
+    {
         Database::connection()->insert('apartment_reservations', [
             'user_id'=>(int)$_SESSION['userid'],
             'reserve_in'=> $userDateFrom,
             'reserve_out'=> $userDateTo,
             'apartment_id' => $apartmentId
             ]);
-        return new Redirect("/");
+        return new Redirect('/');
     }
 }

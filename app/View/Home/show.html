@@ -34,16 +34,15 @@
                     <p class="text-break">{{ apartment.description }}</p>
                 </div>
                 <div class="mb-3 form-check">
-                    <p>{{ apartment.dateFrom }} - {{ apartment.dateTo }}</p>
+                    <p>{{ apartment.dateFrom }} - {{ apartment.dateTo }} | Cost : {{ apartment.cost }}$ per day</p>
                 </div>
                 {% if userName != null %}
                 <div id="datepicker">
                     <form method="POST" action="/reserve/{{ apartment.id }}" autocomplete="off">
-                        <input name="date_from" required min="{{ pickFrom }}" max="{{ pickTo }}" id="datepicker1" placeholder="DATE FROM">
-                        <input name="date_to" required min="{{ pickFrom }}" max="{{ pickTo }}" id="datepicker2" placeholder="DATE TO">
-
-
-
+                        <input name="date_from" required min="{{ pickFrom }}" max="{{ pickTo }}" id="datepicker1"
+                            placeholder="DATE FROM">
+                        <input name="date_to" required min="{{ pickFrom }}" max="{{ pickTo }}" id="datepicker2"
+                            placeholder="DATE TO">
                         <button type="submit" class="btn btn-primary">Reserve</button required>
                     </form>
                 </div>
@@ -89,7 +88,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         var array = JSON.parse('{{ disabledDates | json_encode | raw }}');
 
@@ -99,14 +98,14 @@
                 return [array.indexOf(string) == -1]
             },
             minDate: 0,
-            maxDate: "+5Y"
-        });$('#datepicker2').datepicker({
+            maxDate: new Date('{{ maxDate }}')
+        }); $('#datepicker2').datepicker({
             beforeShowDay: function (date) {
                 var string = jQuery.datepicker.formatDate('yy-mm-dd', date);
                 return [array.indexOf(string) == -1]
             },
             minDate: 0,
-            maxDate: new Date(2022,3,20)
+            maxDate: new Date('{{ maxDate }}')
         });
 
     </script>

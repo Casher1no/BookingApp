@@ -118,6 +118,7 @@ class HomeController
         ->setParameter(0, (int)$vars['id'])
         ->fetchAllAssociative();
 
+        // Apartment Ratings
         $averageRating=0;
 
         foreach ($ratingQuery as $rating) {
@@ -127,7 +128,7 @@ class HomeController
         if ($averageRating == "nan") {
             $averageRating = "0 ratings";
         }
-
+        // --------------
         $dateTo = "Long Term";
         if ($apartmentsQuery[0]['select_to'] != null) {
             $dateTo = explode(" ", $apartmentsQuery[0]['select_to'])[0];
@@ -146,6 +147,13 @@ class HomeController
             $dateFrom,
             $dateTo
         );
+
+        // Maximal date to select for reservation list
+
+        $dateTo = explode('-', $dateTo);
+        $maxDate = "{$dateTo[0]},{$dateTo[1]},{$dateTo[2]}";
+        
+        // ---------------------
 
         $reservations=[];
 
@@ -192,7 +200,8 @@ class HomeController
             'errors' => $dateErrors,
             'pickFrom' => $todaysDay,
             'pickTo'=> $dateTo,
-            "disabledDates" => $disabledDates
+            "disabledDates" => $disabledDates,
+            'maxDate' => $maxDate
         ]);
     }
     public function delete(array $vars):Redirect
@@ -237,7 +246,8 @@ class HomeController
             'description' => $_POST['description'],
             'address' => $_POST['address'],
             'select_to' => $_POST['select_to'],
-            'select_from' => $_POST['select_from']
+            'select_from' => $_POST['select_from'],
+            'cost' => $_POST['cost']
         ], ['id' => (int)$vars['id']]);
 
             

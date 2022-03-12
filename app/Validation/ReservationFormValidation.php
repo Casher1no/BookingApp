@@ -66,14 +66,16 @@ class ReservationFormValidation
         ->createQueryBuilder()
         ->select('reserve_in')
         ->from('apartment_reservations')
-        ->where("reserve_in BETWEEN '{$userFrom}' AND '{$userTo}'")
+        ->where("reserve_in BETWEEN '{$userFrom}' AND '{$userTo}' AND apartment_id = ?")
+        ->setParameter(0, $input['apartmentId'])
         ->fetchAllAssociative();
 
         $reservedTo = Database::connection()
         ->createQueryBuilder()
         ->select('reserve_in')
         ->from('apartment_reservations')
-        ->where("reserve_out BETWEEN '{$userFrom}' AND '{$userTo}'")
+        ->where("reserve_out BETWEEN '{$userFrom}' AND '{$userTo}' AND apartment_id = ?")
+        ->setParameter(0, $input['apartmentId'])
         ->fetchAllAssociative();
 
         if (!empty($reservedFrom || $reservedTo)) {
