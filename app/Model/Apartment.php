@@ -9,10 +9,11 @@ class Apartment
     private string $description;
     private string $address;
     private string $createdAt;
+    private int $cost;
     private ?string $dateFrom;
     private ?string $dateTo;
 
-    public function __construct(int $id, int $userId, string $title, string $description, string $address, string $createdAt, ?string $dateFrom, ?string $dateTo = "Not set")
+    public function __construct(int $id, int $userId, string $title, string $description, string $address, string $createdAt, int $cost, ?string $dateFrom, ?string $dateTo = "Not set")
     {
         $this->id = $id;
         $this->userId = $userId;
@@ -20,6 +21,7 @@ class Apartment
         $this->description = $description;
         $this->address = $address;
         $this->createdAt = $createdAt;
+        $this->cost = $cost;
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
     }
@@ -46,6 +48,10 @@ class Apartment
     public function getCreatedAt():string
     {
         return $this->createdAt;
+    }
+    public function getCost():int
+    {
+        return $this->cost;
     }
     public function getDateFrom():string
     {

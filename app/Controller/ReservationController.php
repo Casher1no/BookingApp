@@ -24,9 +24,14 @@ class ReservationController
     }
     public function reserve(array $vars):Redirect
     {
-        $userDateFrom = $_POST['date_from'];
-        $userDateTo = $_POST['date_to'];
+        $userDateFrom = explode("/", $_POST['date_from']);
+        $userDateTo = explode("/", $_POST['date_to']);
+
+        $userDateFrom = "{$userDateFrom[2]}-{$userDateFrom[0]}-{$userDateFrom[1]}";
+        $userDateTo = "{$userDateTo[2]}-{$userDateTo[0]}-{$userDateTo[1]}";
+
         $apartmentId = (int)$vars['id'];
+
 
         $inputs = [];
         $inputs[]=[

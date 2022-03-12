@@ -6,6 +6,7 @@ use App\Database;
 use App\Redirect;
 use Carbon\Carbon;
 use App\Model\Apartment;
+use Carbon\CarbonPeriod;
 use App\Model\Reservation;
 use App\Validation\Errors;
 use App\Validation\ApartmentFormValidation;
@@ -31,6 +32,7 @@ class HomeController
                 $apartment['description'],
                 $apartment['address'],
                 $apartment['created_at'],
+                $apartment['cost'],
                 $apartment['select_from'],
                 $apartment['select_to'],
             );
@@ -140,6 +142,7 @@ class HomeController
             $apartmentsQuery[0]['description'],
             $apartmentsQuery[0]['address'],
             $apartmentsQuery[0]['created_at'],
+            $apartmentsQuery[0]['cost'],
             $dateFrom,
             $dateTo
         );
@@ -162,11 +165,22 @@ class HomeController
                 $reservation['reserve_out']
             );
         }
+        $disabledDates = [];
+        
+        foreach ($reservationQuery as $reservation) {
+            $period = CarbonPeriod::create($reservation['reserve_in'], $reservation['reserve_out']);
+            foreach ($period as $date) {
+                $disabledDates[] = $date->format('Y-m-d');
+            }
+        }
+
 
         $dateErrors = $_SESSION['dateErrors'];
         if (isset($_SESSION['dateErrors'])) {
             unset($_SESSION['dateErrors']);
         }
+
+        $todaysDay = Carbon::now()->toDateString();
 
         return new View("Home/show", [
             'apartment' => $apartment,
@@ -175,7 +189,10 @@ class HomeController
             'rateStatus' => $rated,
             'averageRating' =>$averageRating,
             'reservations' => $reservations,
-            'errors' => $dateErrors
+            'errors' => $dateErrors,
+            'pickFrom' => $todaysDay,
+            'pickTo'=> $dateTo,
+            "disabledDates" => $disabledDates
         ]);
     }
     public function delete(array $vars):Redirect
@@ -204,6 +221,7 @@ class HomeController
             $apartmentsQuery[0]['description'],
             $apartmentsQuery[0]['address'],
             $apartmentsQuery[0]['created_at'],
+            $apartmentsQuery[0]['cost'],
             $apartmentsQuery[0]['select_from'],
             $apartmentsQuery[0]['select_to'],
         );
