@@ -19,7 +19,6 @@
 
 <body>
     <ul class="nav justify-content-center">
-
         <li class="nav-item">
             <a class="nav-link" href="/">Go Back</a>
         </li>
@@ -34,7 +33,7 @@
                     <p class="text-break">{{ apartment.description }}</p>
                 </div>
                 <div class="mb-3 form-check">
-                    <p>{{ apartment.dateFrom }} - {{ apartment.dateTo }} | Cost : {{ apartment.cost }}$ per day</p>
+                    <p>{{ apartment.dateFrom }} - {{ apartment.dateTo }} | Cost : {{ apartment.cost }}$ per night</p>
                 </div>
                 {% if userName != null %}
                 <div id="datepicker">
