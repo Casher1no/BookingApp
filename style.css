@@ -72,3 +72,10 @@ body{
     border: 2px solid #e5e8ec;
     border-radius: 5px;
 }
+.checkoutDiv{
+    margin: auto;
+    width: 500px;
+}
+.pend-text{
+    text-align: center;
+}

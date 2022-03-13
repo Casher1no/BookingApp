@@ -26,6 +26,9 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/edit/{id:\d+}', [HomeController::class, 'edit']);
     $r->addRoute('POST', '/edit/{id:\d+}', [HomeController::class, 'update']);
     $r->addRoute('POST', '/reserve/{id:\d+}', [ReservationController::class, 'reserve']);
+    $r->addRoute('GET', '/checkout/{id:\d+}', [ReservationController::class, 'checkout']);
+    $r->addRoute('GET', '/accept/{id:\d+}', [ReservationController::class, 'accept']);
+    $r->addRoute('GET', '/cancel/{id:\d+}', [ReservationController::class, 'cancel']);
 
     // Sign up
     $r->addRoute('GET', '/signup', [SignupController::class, 'signUp']);

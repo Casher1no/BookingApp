@@ -29,6 +29,9 @@
     {% else %}
     <ul class="nav justify-content-end">
         <li class="nav-item">
+            <a class="nav-link" href="/checkout/{{ userId }}">Pending reservations</a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link">{{ userName }} {{ userSurname }}</a>
         </li>
         <li class="nav-item">
@@ -58,6 +61,7 @@
                     {% if userId == apartment.userId and userName != null %}
                     <a href="/delete/{{ apartment.id }}" class="btn btn-primary" onclick="return confirm('Are you sure?')">Delete</a>
                     <a href="/edit/{{ apartment.id }}" class="btn btn-primary">Edit</a>
+                    <p>Apartment ID: {{ apartment.id }}</p>
                     {% endif %}
                 </div>
             </div>
