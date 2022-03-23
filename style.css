@@ -21,8 +21,7 @@ body{
 }
 .apartment-list{
     width: 35%;
-    float: right;
-    margin: 30px;
+    margin: auto;
 }
 .add-apartments{
     padding:20px;
@@ -32,6 +31,9 @@ body{
 }
 .homepage-logo{
     color: #F8F8FF;
+}
+#user-name{
+    color: #262626;
 }
 #appName{
     background-color: #262626;
