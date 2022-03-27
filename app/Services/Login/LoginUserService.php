@@ -6,7 +6,7 @@ use App\Services\Login\LoginUserRequest;
 
 class LoginUserService
 {
-    public function execute(LoginUserRequest $request)
+    public function execute(LoginUserRequest $request):void
     {
         $user = Database::connection()
             ->createQueryBuilder()

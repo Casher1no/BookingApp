@@ -6,7 +6,7 @@ use Carbon\Carbon;
 
 class PostApartmentService
 {
-    public function execute(PostApartmentRequest $request)
+    public function execute(PostApartmentRequest $request):void
     {
         $selectDates = $request->getDatesFromTo();
         $postInfo = $request->getApartmentInfo();

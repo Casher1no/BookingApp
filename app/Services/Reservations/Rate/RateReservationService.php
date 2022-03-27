@@ -5,7 +5,7 @@ use App\Database;
 
 class RateReservationService
 {
-    public function execute(RateReservationRequest $request)
+    public function execute(RateReservationRequest $request):void
     {
         Database::connection()->insert("apartment_rating", [
             'apartment_id' => $request->getApartmentId(),

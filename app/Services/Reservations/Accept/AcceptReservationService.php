@@ -5,7 +5,7 @@ use App\Database;
 
 class AcceptReservationService
 {
-    public function execute(AcceptReservationRequest $request)
+    public function execute(AcceptReservationRequest $request):void
     {
         $acceptQuery = Database::connection()
             ->createQueryBuilder()

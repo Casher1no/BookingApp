@@ -1,48 +1,38 @@
 <?php
 namespace App\Services\Apartments\Show;
 
-use App\Database;
-use Carbon\Carbon;
 use App\Model\Apartment;
 use Carbon\CarbonPeriod;
 use App\Model\Reservation;
 use App\Services\Apartments\Show\ShowApartmentRequest;
 use App\Services\Apartments\Show\ShowApartmentResponse;
+use App\Repositories\Apartments\Show\ApartmentRepository;
+use App\Repositories\Apartments\Show\PdoApartmentRepository;
 
 class ShowApartmentService
 {
+    private ApartmentRepository $apartmentRepository;
+
+    public function __construct()
+    {
+        $this->apartmentRepository = new PdoApartmentRepository();
+    }
+
+
     public function execute(ShowApartmentRequest $request):ShowApartmentResponse
     {
         $id = $request->getId();
         $userId = $request->getUserId();
+        $repository = $this->apartmentRepository;
 
-        $apartmentsQuery = Database::connection()
-        ->createQueryBuilder()
-        ->select('*')
-        ->from('apartments')
-        ->where("id = ?")
-        ->setParameter(0, $id)
-        ->fetchAllAssociative();
-
-        $rated = Database::connection()
-            ->createQueryBuilder()
-            ->select('COUNT(id)')
-            ->from('apartment_rating')
-            ->where('user_id = ? AND apartment_id = ?')
-            ->setParameter(0, $userId)
-            ->setParameter(1, $id)
-            ->fetchNumeric();
+        $apartmentsQuery = $repository->apartmentQuery($id);
+        $rated = $repository->ratedQuery($userId, $id);
+        $ratingQuery = $repository->ratingQuery($id);
+        $reservationQuery = $repository->reservationQuery($id);
     
         // If user rated apartment
         $rated = $rated[0] > 0 ? true : false;
 
-        $ratingQuery = Database::connection()
-        ->createQueryBuilder()
-        ->select('apartment_rating')
-        ->from('apartment_rating')
-        ->where('apartment_id = ?')
-        ->setParameter(0, $id)
-        ->fetchAllAssociative();
 
         // Apartment Ratings
         $averageRating=0;
@@ -83,14 +73,6 @@ class ShowApartmentService
 
         $reservations=[];
 
-        $reservationQuery = Database::connection()
-            ->createQueryBuilder()
-            ->select('*')
-            ->from('apartment_reservations')
-            ->where('apartment_id = ?')
-            ->setParameter(0, $id)
-            ->fetchAllAssociative();
-
         foreach ($reservationQuery as $reservation) {
             $reservations[] = new Reservation(
                 $reservation['apartment_id'],
@@ -99,6 +81,7 @@ class ShowApartmentService
                 $reservation['reserve_out']
             );
         }
+
         $disabledDates = [];
         
         foreach ($reservationQuery as $reservation) {

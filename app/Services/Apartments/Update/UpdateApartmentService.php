@@ -5,7 +5,7 @@ use App\Database;
 
 class UpdateApartmentService
 {
-    public function execute(UpdateApartmentRequest $request)
+    public function execute(UpdateApartmentRequest $request):void
     {
         Database::connection()->update("apartments", [
             'title' => $request->getInfo()[0],

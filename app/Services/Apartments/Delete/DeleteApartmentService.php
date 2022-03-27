@@ -1,14 +1,21 @@
 <?php
 namespace App\Services\Apartments\Delete;
 
-use App\Services\Apartments\Delete\DeleteApartmentRequest;
-use App\Database;
+use App\Repositories\Apartments\Delete\DeleteApartmentRepository;
+use App\Repositories\Apartments\Delete\PdoDeleteApartmentRepository;
 
 class DeleteApartmentService
 {
-    public function execute(DeleteApartmentRequest $request)
+    private DeleteApartmentRepository $apartmentRepository;
+
+    public function __construct()
     {
-        Database::connection()
-            ->delete('apartments', ["id" =>(int)$request->getId()]);
+        $this->apartmentRepository = new PdoDeleteApartmentRepository();
+    }
+
+    public function execute(DeleteApartmentRequest $request):void
+    {
+        $repository = $this->apartmentRepository;
+        $repository->delete((int)$request->getId());
     }
 }

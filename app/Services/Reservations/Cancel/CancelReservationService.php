@@ -5,7 +5,7 @@ use App\Database;
 
 class CancelReservationService
 {
-    public function execute(CancelReservationRequest $request)
+    public function execute(CancelReservationRequest $request):void
     {
         Database::connection()
         ->delete('apartment_pending', ['id'=>$request->getId()]);
