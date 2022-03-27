@@ -2,11 +2,13 @@
 namespace App\Controller;
 
 use App\View;
-use App\Redirect;
 use App\Database;
+use App\Redirect;
 use App\Validation\Errors;
-use App\Exceptions\LoginValidationException;
 use App\Validation\LoginValidation;
+use App\Services\Login\LoginUserRequest;
+use App\Services\Login\LoginUserService;
+use App\Exceptions\LoginValidationException;
 
 class LoginController
 {
@@ -29,28 +31,10 @@ class LoginController
             return new Redirect("/login");
         }
 
-
-        $user = Database::connection()
-            ->createQueryBuilder()
-            ->select('*')
-            ->from('users')
-            ->where("email = ?")
-            ->setParameter(0, $_POST["email"])
-            ->fetchAllAssociative();
-            
-
-        $userProfile = Database::connection()
-                ->createQueryBuilder()
-                ->select('*')
-                ->from('user_profiles')
-                ->where("user_id = ?")
-                ->setParameter(0, $user[0]['id'])
-                ->fetchAllAssociative();
-                
-        session_start();
-        $_SESSION["userid"] = htmlentities($user[0]["id"]);
-        $_SESSION["name"] = htmlentities($userProfile[0]["name"]);
-        $_SESSION["surname"] = htmlentities($userProfile[0]["surname"]);
+        $service = new LoginUserService();
+        $service->execute(new LoginUserRequest(
+            $_POST['email']
+        ));
         
         
 

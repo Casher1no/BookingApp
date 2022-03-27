@@ -7,6 +7,8 @@ use App\Redirect;
 use App\Validation\Errors;
 use App\Validation\SignupValidation;
 use App\Exceptions\SignupValidationException;
+use App\Services\Signup\SignupUser\SignupUserRequest;
+use App\Services\Signup\SignupUser\SignupUserService;
 
 class SignupController
 {
@@ -32,28 +34,15 @@ class SignupController
 
         $hashedPwd = password_hash($_POST["password"], PASSWORD_DEFAULT);
 
+        $service = new SignupUserService();
+        $service->execute(new SignupUserRequest(
+            $_POST['email'],
+            $hashedPwd,
+            $_POST['name'],
+            $_POST['surname'],
+            $_POST['birthday'],
+        ));
         
-        Database::connection()
-            ->insert('users', [
-                'email' => $_POST['email'],
-                'password' => $hashedPwd,
-            ]);
-            
-        $createdUser = Database::connection()
-            ->createQueryBuilder()
-            ->select('id')
-            ->from('users')
-            ->where("email = ?")
-            ->setParameter(0, $_POST['email'])
-            ->fetchAllAssociative();
-            
-        Database::connection()
-            ->insert('user_profiles', [
-                'user_id' => $createdUser[0]['id'],
-                'name' => $_POST['name'],
-                'surname' => $_POST['surname'],
-                'birthday' => $_POST['birthday']
-            ]);
         
         return new Redirect("/");
     }
