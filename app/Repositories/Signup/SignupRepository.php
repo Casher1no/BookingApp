@@ -1,7 +1,7 @@
 <?php
 namespace App\Repositories\Signup;
 
-use App\Services\Signup\SignupUser\SignupUserRequest;
+use App\Services\Signup\SignupUserRequest;
 
 interface SignupRepository
 {

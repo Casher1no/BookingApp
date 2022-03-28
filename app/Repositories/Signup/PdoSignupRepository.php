@@ -3,7 +3,7 @@
 namespace App\Repositories\Signup;
 
 use App\Database;
-use App\Services\Signup\SignupUser\SignupUserRequest;
+use App\Services\Signup\SignupUserRequest;
 
 class PdoSignupRepository implements SignupRepository
 {

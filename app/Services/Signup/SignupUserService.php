@@ -1,10 +1,9 @@
 <?php
-namespace App\Services\Signup\SignupUser;
+namespace App\Services\Signup;
 
-use App\Database;
+use App\Services\Signup\SignupUserRequest;
 use App\Repositories\Signup\SignupRepository;
 use App\Repositories\Signup\PdoSignupRepository;
-use App\Services\Signup\SignupUser\SignupUserRequest;
 
 class SignupUserService
 {

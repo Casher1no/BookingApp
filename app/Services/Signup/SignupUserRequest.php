@@ -1,5 +1,5 @@
 <?php
-namespace App\Services\Signup\SignupUser;
+namespace App\Services\Signup;
 
 class SignupUserRequest
 {
