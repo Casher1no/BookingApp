@@ -1,13 +1,21 @@
 <?php
 namespace App\Services\Reservations\Cancel;
 
-use App\Database;
+use App\Repositories\Reservations\Cancel\CancelRepository;
+use App\Repositories\Reservations\Cancel\PdoCancelRepository;
+use App\Services\Reservations\Cancel\CancelReservationRequest;
 
 class CancelReservationService
 {
+    private CancelRepository $cancelRepository;
+
+    public function __construct()
+    {
+        $this->cancelRepository = new PdoCancelRepository();
+    }
+
     public function execute(CancelReservationRequest $request):void
     {
-        Database::connection()
-        ->delete('apartment_pending', ['id'=>$request->getId()]);
+        $this->cancelRepository->deletePending($request->getId());
     }
 }

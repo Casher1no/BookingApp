@@ -1,30 +1,23 @@
 <?php
 namespace App\Services\Reservations\Accept;
 
-use App\Database;
+use App\Repositories\Reservations\Accept\AcceptRepository;
+use App\Repositories\Reservations\Accept\PdoAcceptRepository;
+use App\Services\Reservations\Accept\AcceptReservationRequest;
 
 class AcceptReservationService
 {
+    private AcceptRepository $acceptRepository;
+
+    public function __construct()
+    {
+        $this->acceptRepository = new PdoAcceptRepository();
+    }
+
     public function execute(AcceptReservationRequest $request):void
     {
-        $acceptQuery = Database::connection()
-            ->createQueryBuilder()
-            ->select('*')
-            ->from('apartment_pending')
-            ->where("id = ?")
-            ->setParameter(0, $request->getApartmentId())
-            ->fetchAllAssociative();
-
-        Database::connection()->insert('apartment_reservations', [
-            'user_id' => $request->getUserId(),
-            'apartment_id' => $acceptQuery[0]['apartment_id'],
-            'reserve_in' => $acceptQuery[0]['date_from'],
-            'reserve_out' => $acceptQuery[0]['date_to']
-        ]);
-
-        Database::connection()
-        ->delete('apartment_pending', [
-            'id'=>$request->getApartmentId()
-        ]);
+        $acceptQuery = $this->acceptRepository->acceptQuery($request->getApartmentId());
+        $this->acceptRepository->insert($acceptQuery, $request->getUserId());
+        $this->acceptRepository->deletePending($request->getApartmentId());
     }
 }

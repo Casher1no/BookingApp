@@ -2,18 +2,31 @@
 namespace App\Services\Apartments\Update;
 
 use App\Database;
+use App\Repositories\Apartments\Update\Model\Apartment;
+use App\Services\Apartments\Update\UpdateApartmentRequest;
+use App\Repositories\Apartments\Update\UpdateApartmentRepository;
+use App\Repositories\Apartments\Update\PdoUpdateApartmentRepository;
 
 class UpdateApartmentService
 {
+    private UpdateApartmentRepository $apartmentRepository;
+
+    public function __construct()
+    {
+        $this->apartmentRepository = new PdoUpdateApartmentRepository();
+    }
+
     public function execute(UpdateApartmentRequest $request):void
     {
-        Database::connection()->update("apartments", [
-            'title' => $request->getInfo()[0],
-            'description' => $request->getInfo()[1],
-            'address' => $request->getInfo()[2],
-            'select_to' => $request->getInfo()[3],
-            'select_from' => $request->getInfo()[4],
-            'cost' => $request->getInfo()[5]
-        ], ['id' => $request->getId()]);
+        $apartment = new Apartment(
+            $request->getInfo()[0],
+            $request->getInfo()[1],
+            $request->getInfo()[2],
+            $request->getInfo()[3],
+            $request->getInfo()[4],
+            $request->getInfo()[5],
+        );
+
+        $this->apartmentRepository->update($apartment, $request->getId());
     }
 }

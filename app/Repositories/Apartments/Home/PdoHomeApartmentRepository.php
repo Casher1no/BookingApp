@@ -1,18 +1,17 @@
 <?php
-namespace App\Repositories\Apartments\Edit;
+namespace App\Repositories\Apartments\Home;
 
 use App\Database;
 
-class PdoEditApartmentRepository implements EditApartmentRepository
+class PdoHomeApartmentRepository implements HomeApartmentRepository
 {
-    public function apartmentQuery(int $id):array
+    public function apartmentQuery():array
     {
         $apartmentsQuery = Database::connection()
         ->createQueryBuilder()
         ->select('*')
         ->from('apartments')
-        ->where("id = ?")
-        ->setParameter(0, $id)
+        ->orderBy('created_at', 'desc')
         ->fetchAllAssociative();
 
         return $apartmentsQuery;

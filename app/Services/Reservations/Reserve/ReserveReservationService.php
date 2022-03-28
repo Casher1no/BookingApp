@@ -4,20 +4,26 @@ namespace App\Services\Reservations\Reserve;
 use App\Database;
 use App\Model\Apartment;
 use App\Model\Reservation;
+use App\Repositories\Reservations\Reserve\ReserveRepository;
+use App\Repositories\Reservations\Reserve\PdoReserveRepository;
+use App\Services\Reservations\Reserve\ReserveReservationRequest;
 
 class ReserveReservationService
 {
+    private ReserveRepository $reserveRepository;
+
+    public function __construct()
+    {
+        $this->reserveRepository = new PdoReserveRepository();
+    }
+
     public function execute(ReserveReservationRequest $request):void
     {
         $reservations = [];
 
-        $reservationQuery = Database::connection()
-            ->createQueryBuilder()
-            ->select('*')
-            ->from('apartment_reservations')
-            ->where('apartment_id = ?')
-            ->setParameter(0, $request->getApartmentId())
-            ->fetchAllAssociative();
+
+        $reservationQuery = $this->reserveRepository->reservationQuery($request->getApartmentId());
+
 
         foreach ($reservationQuery as $reservation) {
             $reservations[] = new Reservation(
@@ -28,33 +34,13 @@ class ReserveReservationService
             );
         }
 
-        $apartmentsQuery = Database::connection()
-            ->createQueryBuilder()
-            ->select('*')
-            ->from('apartments')
-            ->where("id = ?")
-            ->setParameter(0, $request->getApartmentId())
-            ->fetchAllAssociative();
-
-        $rated = Database::connection()
-            ->createQueryBuilder()
-            ->select('COUNT(id)')
-            ->from('apartment_rating')
-            ->where('user_id = ? AND apartment_id = ?')
-            ->setParameter(0, $request->getId())
-            ->setParameter(1, $request->getApartmentId())
-            ->fetchNumeric();
+        $apartmentsQuery = $this->reserveRepository->apartmentQuery($request->getApartmentId());
+        $rated = $this->reserveRepository->ratedCount($request->getId(), $request->getApartmentId());
 
         // If user rated article
         $rated = $rated[0] > 0 ? true : false;
 
-        $ratingQuery = Database::connection()
-            ->createQueryBuilder()
-            ->select('apartment_rating')
-            ->from('apartment_rating')
-            ->where('apartment_id = ?')
-            ->setParameter(0, $request->getApartmentId())
-            ->fetchAllAssociative();
+        $ratingQuery = $this->reserveRepository->ratingQuery($request->getApartmentId());
 
         $averageRating = 0;
 
@@ -85,13 +71,6 @@ class ReserveReservationService
             $dateTo
         );
         
-
-        Database::connection()->insert('apartment_pending', [
-            'user_id' => $request->getId(),
-            'date_from' => $request->getInputs()[0]['userFrom'],
-            'date_to' => $request->getInputs()[0]['userTo'],
-            'apartment_id' => $request->getInputs()[0]['apartmentId'],
-            'cost' => $apartmentsQuery[0]['cost']
-        ]);
+        $this->reserveRepository->insertPending($request, $apartmentsQuery[0]['cost']);
     }
 }

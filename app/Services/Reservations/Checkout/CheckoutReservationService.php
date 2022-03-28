@@ -1,22 +1,24 @@
 <?php
 namespace App\Services\Reservations\Checkout;
 
-use App\Database;
 use Carbon\Carbon;
 use App\Model\Pending;
+use App\Repositories\Reservations\Checkout\CheckoutRepository;
+use App\Repositories\Reservations\Checkout\PdoCheckoutRepository;
+use App\Services\Reservations\Checkout\CheckoutReservationRequest;
 
 class CheckoutReservationService
 {
+    private CheckoutRepository $checkoutRepository;
+
+    public function __construct()
+    {
+        $this->checkoutRepository = new PdoCheckoutRepository();
+    }
+
     public function execute(CheckoutReservationRequest $request):array
     {
-        $pendingQuery = Database::connection()
-            ->createQueryBuilder()
-            ->select('*')
-            ->from('apartment_pending')
-            ->where("user_id = ?")
-            ->setParameter(0, $request->getId())
-            ->fetchAllAssociative();
-
+        $pendingQuery = $this->checkoutRepository->pendingQuery($request->getId());
         $pending = [];
 
         foreach ($pendingQuery as $query) {

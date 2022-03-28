@@ -3,17 +3,21 @@ namespace App\Services\Apartments\Home;
 
 use App\Database;
 use App\Model\Apartment;
+use App\Repositories\Apartments\Home\HomeApartmentRepository;
+use App\Repositories\Apartments\Home\PdoHomeApartmentRepository;
 
 class HomeApartmentService
 {
+    private HomeApartmentRepository $apartmentRepository;
+
+    public function __construct()
+    {
+        $this->apartmentRepository = new PdoHomeApartmentRepository();
+    }
+
     public function execute():array
     {
-        $apartmentsQuery = Database::connection()
-        ->createQueryBuilder()
-        ->select('*')
-        ->from('apartments')
-        ->orderBy('created_at', 'desc')
-        ->fetchAllAssociative();
+        $apartmentsQuery = $this->apartmentRepository->apartmentQuery();
         
         $apartments = [];
         foreach ($apartmentsQuery as $apartment) {

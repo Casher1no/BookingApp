@@ -1,11 +1,21 @@
 <?php
 namespace App\Services\Apartments\Post;
 
-use App\Database;
 use Carbon\Carbon;
+use App\Repositories\Apartments\Post\Model\Apartment;
+use App\Services\Apartments\Post\PostApartmentRequest;
+use App\Repositories\Apartments\Post\PostApartmentRepository;
+use App\Repositories\Apartments\Post\PdoPostApartmentRepository;
 
 class PostApartmentService
 {
+    private PostApartmentRepository $apartmentRepository;
+
+    public function __construct()
+    {
+        $this->apartmentRepository = new PdoPostApartmentRepository();
+    }
+
     public function execute(PostApartmentRequest $request):void
     {
         $selectDates = $request->getDatesFromTo();
@@ -25,14 +35,17 @@ class PostApartmentService
             $to = $selectDates[1];
         }
         
-        Database::connection()->insert('apartments', [
-            'user_id'=> $request->getId(),
-            'title'=>$postInfo[0],
-            'description'=>$postInfo[1],
-            'address'=>$postInfo[2],
-            'select_from'=>$from,
-            'select_to'=>$to,
-            'cost'=> $postInfo[3]
-            ]);
+
+        $apartment = new Apartment(
+            $request->getId(),
+            $postInfo[0],
+            $postInfo[1],
+            $postInfo[2],
+            $from,
+            $to,
+            (int)$postInfo[3],
+        );
+ 
+        $this->apartmentRepository->insert($apartment);
     }
 }
